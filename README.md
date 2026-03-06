@@ -1,7 +1,6 @@
 # demo-gitops
 
-Companion GitOps repository for Chapter 6 of *Continuous Promotion with Kargo*
-(O'Reilly, 2026).
+Companion GitOps repository for Chapter 6 of *Continuous Promotion with Kargo*.
 
 The container image used by this repo is published at
 `ghcr.io/kargobook/demo-app`; you do not need to build or push anything.

@@ -1,6 +1,6 @@
 # CLAUDE.md — demo-gitops
 
-Public companion GitOps repository for *Continuous Promotion with Kargo* (O'Reilly, 2026).
+Public companion GitOps repository for *Continuous Promotion with Kargo*.
 Canonical location: https://github.com/kargobook/demo-gitops
 
 Readers fork this repo. Kargo pushes promotion commits to the fork to update image tags.
