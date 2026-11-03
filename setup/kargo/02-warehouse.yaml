@@ -7,4 +7,4 @@ spec:
   subscriptions:
   - image:
       repoURL: ghcr.io/kargobook/demo-app
-      constraint: ">=1.0.0 <2.0.0"
+      constraint: ">=1.0.0 <1.4.0"

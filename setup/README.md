@@ -1,29 +1,45 @@
 # setup/
 
-One-time cluster setup resources for Chapter 3. Apply these in order after
-forking this repo and adding your GitHub token to `03-git-credentials.yaml`.
+The resources chapter 3 creates, in finished form. The chapter creates them one
+at a time with the Argo CD and Kargo CLIs; this directory holds the same files
+in one place.
 
-The Argo CD Applications render `charts/` with each environment's `envs/` values
-file; nothing in this directory is rendered into the cluster by Argo CD.
+Run `configure.sh` first so every file points at your fork.
 
-## Apply order
+- `argocd/applicationset.yaml`: one Argo CD Application per environment, each
+  rendering `charts/demo-app` with that environment's `envs/` values file.
+- `kargo/`: the `demo` Project, its Warehouse, its three Stages, and the
+  ProjectConfig that turns on auto-promotion for dev.
 
-Apply the Project before the Git credentials, Warehouse, and Stages: it
-provisions the `demo` namespace those resources land in.
+## Starting the pipeline over
+
+Projects and their pipelines are long-lived: you update them from time to
+time, but you rarely start one over. If you do want to start this one over,
+delete the Project, which deletes everything in it:
 
 ```bash
-kubectl apply -f setup/00-namespaces.yaml
-kubectl apply -f setup/01-project.yaml
-kubectl apply -f setup/02-argocd-apps.yaml
-kubectl apply -f setup/03-git-credentials.yaml   # add your token first
-kubectl apply -f setup/04-warehouse.yaml
-kubectl apply -f setup/05-stage-dev.yaml
-kubectl apply -f setup/06-stage-pre-prod.yaml
-kubectl apply -f setup/07-stage-prod.yaml
-kubectl apply -f setup/08-projectconfig.yaml     # auto-promotion for dev
+kargo delete project demo
 ```
 
-Apply `08-projectconfig.yaml` last. It turns on auto-promotion for the `dev`
-Stage, and the chapter walks through it only after the manual dev, pre-prod, and
-prod promotions, so that auto-promotion has something to demonstrate. Applying
-it earlier is harmless but skips ahead of the narrative.
+Then recreate it with three commands:
+
+```bash
+kargo apply --filename setup/kargo/01-project.yaml
+kargo create repo-credentials --project demo demo-git-creds --git \
+  --repo-url https://github.com/$(gh api user --jq .login)/demo-gitops.git \
+  --username $(gh api user --jq .login) --password "$(gh auth token)"
+kargo apply --recursive --filename setup/kargo/
+```
+
+If the first command says the namespace is still being terminated, wait a few
+seconds and run it again.
+
+The Git credentials have to exist before the last command, because
+`04-projectconfig.yaml` turns on auto-promotion for dev, and dev's first
+promotion pushes to your fork. They are never stored in a file:
+`kargo create repo-credentials` builds the Secret from the token `gh auth token`
+prints.
+
+Deleting the Project leaves your fork alone, so the values files keep what
+Kargo wrote, and `kargo/02-warehouse.yaml` keeps whatever constraint you gave
+it.

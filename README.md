@@ -10,8 +10,8 @@ A single service, `demo-app`, promoted through `dev → pre-prod → prod`. This
 
 ```
 charts/demo-app/            # the demo-app Helm chart
-envs/{dev,pre-prod,prod}/    # per-environment values.yaml (Kargo writes the image digest here)
-setup/                      # Kargo Project, Warehouse, Stages + the Argo CD Applications
+envs/{dev,pre-prod,prod}/    # per-environment values.yaml (Kargo writes the image tag and digest here)
+setup/                      # Kargo Project, Warehouse, Stages + the Argo CD ApplicationSet
 configure.sh                # helper to point the setup at your fork
 ```
 
